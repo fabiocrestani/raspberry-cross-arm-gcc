@@ -1,13 +1,26 @@
-OBJS := ./bin/main.o
-
-ifdef DEBUG
-	EXE := ./bin/raspberry-gcc-local-debug.exe
+#
+# makefile
+#
+# Created on: 3 de mar de 2019
+#     Author: Fabio Crestani
+#
+ 
+ifdef DEBUG_IN_HOST
+	BIN_PATH := bin/x86
+	
+	OBJS := ./$(BIN_PATH)/main.o
+	EXE := ./$(BIN_PATH)/raspberry-gcc-local-debug.exe
+	
 	CC := gcc
 	LL := gcc
 	CC_OPTIONS := -c -O0 -g -I"source" 
 	LL_OPTIONS := -o $(EXE)
 else
-	EXE := ./bin/raspberry-cross-arm-gcc
+	BIN_PATH := bin/arm-linux-gnueabihf
+	
+	OBJS := ./$(BIN_PATH)/main.o
+	EXE := ./$(BIN_PATH)/raspberry-cross-arm-gcc
+	
 	CC := arm-linux-gnueabihf-gcc
 	LL := arm-linux-gnueabihf-gcc
 	CC_OPTIONS := -c -O0 -g -I"source" 
@@ -20,7 +33,7 @@ all: $(EXE)
 	@echo "*** finished building ***"
 
 # Rule to build the files in the source folder
-./bin/%.o: ./source/%.c
+./$(BIN_PATH)/%.o: ./source/%.c
 	@echo Building file: $<
 	$(CC) $(CC_OPTIONS) -o "$@" "$<"
 	@echo Finished building: $<
@@ -34,4 +47,5 @@ $(EXE): $(OBJS) $(USER_OBJS)
 
 # Clean target
 clean:
-	del /f /s /q bin\*.*
+	del /f /s /q bin\x86\*.*
+	del /f /s /q bin\arm-linux-gnueabihf\*.*
